@@ -8,6 +8,8 @@ import errorHandler from './Middlewares/errorHandler.js'
 // Import routes
 import authRoutes from './Routes/authRoutes.js';
 import transactionRoutes from './Routes/transactionRoutes.js';
+import analyticsRoutes from './Routes/analyticsRoutes.js';
+
 
 dotenv.config();
 const app= express();
@@ -26,6 +28,7 @@ app.get('/', (req, res) => {
 
 app.use('api/auth',authRoutes);
 app.use('/api/transactions', transactionRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Error handling middleware
 app.use(errorHandler);
