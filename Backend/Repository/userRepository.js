@@ -34,9 +34,9 @@ export const getUserByUsername = async (username) => {
 };
 
 // Checks if a user exists with the given username or email.
-export const getUserByUsernameOrEmail = async (username, email) => {
+export const getUserByUsernameOrEmail = async (identifier) => {
     try {
-        return await User.findOne({ $or: [{ username }, { email }] });
+        return await User.findOne({ $or: [{ username:identifier }, { email:identifier }] });
     } catch (error) {
         throw new Error(`Error finding user by username or email: ${error.message}`);
     }
