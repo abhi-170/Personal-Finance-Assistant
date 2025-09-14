@@ -27,6 +27,12 @@ const transactionSchema = new mongoose.Schema({
   description: {
     type: String,
     trim: true
+  },
+  source: {
+    type: String,
+    enum: ['manual', 'receipt', 'import'],
+    default: 'manual',
+    required: false
   }
 }, {
   timestamps: true

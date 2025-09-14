@@ -751,7 +751,8 @@ export const processReceipt = async (req, res, next) => {
             for (const transactionData of result.transactions) {
                 const transaction = await saveTransactionToDB({
                     ...transactionData,
-                    userId
+                    userId,
+                    source: 'receipt'
                 });
                 createdTransactions.push(transaction);
             }
@@ -808,7 +809,8 @@ export const createFromPreview = async (req, res, next) => {
                     ...transactions[i],
                     userId,
                     amount: parseFloat(transactions[i].amount),
-                    date: new Date(transactions[i].date)
+                    date: new Date(transactions[i].date),
+                    source: 'receipt'
                 };
 
                 const transaction = await saveTransactionToDB(transactionData);

@@ -6,6 +6,7 @@ import {
     deleteTransactionById,
     getUserCategories
 } from '../Repository/transactionRepository.js';
+import Transaction from '../Models/Transaction.js';
 
 // Helper function to convert period to date range
 const getPeriodDateRange = (period) => {
@@ -77,6 +78,7 @@ export const getTransactions = async (req, res, next) => {
             endDate,
             description,
             period,
+            source,
             page = 1,
             limit = 10,
             sortBy = 'date',
@@ -88,7 +90,8 @@ export const getTransactions = async (req, res, next) => {
             category,
             startDate,
             endDate,
-            description
+            description,
+            source
         };
 
         // If period is provided, override startDate and endDate
@@ -259,6 +262,27 @@ export const bulkCreateTransactions = async (req, res, next) => {
                 created: createdTransactions,
                 errors: errors
             }
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// Migration function to add source field to existing transactions
+export const migrateTransactionSources = async (req, res, next) => {
+    try {
+        const { userId } = req.user;
+        
+        // Update all transactions without source field to have source: 'manual'
+        const result = await Transaction.updateMany(
+            { userId, source: { $exists: false } },
+            { $set: { source: 'manual' } }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: `Updated ${result.modifiedCount} transactions with source field`,
+            data: result
         });
     } catch (error) {
         next(error);

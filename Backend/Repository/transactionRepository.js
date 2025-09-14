@@ -19,6 +19,7 @@ export const getTransactionsByUserId = async (userId, filters = {}, options = {}
             startDate,
             endDate,
             description,
+            source,
             page = 1,
             limit = 10,
             sortBy = '-date'
@@ -37,6 +38,10 @@ export const getTransactionsByUserId = async (userId, filters = {}, options = {}
 
         if (description) {
             query.description = { $regex: description, $options: 'i' };
+        }
+
+        if (source) {
+            query.source = source;
         }
 
         if (startDate || endDate) {

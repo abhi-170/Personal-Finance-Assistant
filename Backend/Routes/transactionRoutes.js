@@ -6,7 +6,8 @@ import {
     updateTransaction,
     deleteTransaction,
     getCategories,
-    bulkCreateTransactions
+    bulkCreateTransactions,
+    migrateTransactionSources
 } from '../Controllers/transactionControllers.js';
 import protectRoute from '../Middlewares/authMiddleware.js';
 import {
@@ -29,6 +30,9 @@ router.get('/', validateTransactionQuery, getTransactions);
 
 // Get user's categories
 router.get('/categories', getCategories);
+
+// Migrate existing transactions to add source field
+router.post('/migrate-sources', migrateTransactionSources);
 
 // Bulk create transactions
 router.post('/bulk', validateBulkTransactions, bulkCreateTransactions);
