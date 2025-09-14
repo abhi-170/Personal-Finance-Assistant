@@ -2,8 +2,7 @@
 
 ## 🎥 Demo
 
-**Live Demo:** [Add your hosted application link here]rsonal Finance Assistant
-**Demo Video:** [Add your demo video link here]
+**Demo Video:** [https://drive.google.com/file/d/1j6eO9PJ6wCDz05XYxBEoqSSxECpq0f7P/view?usp=sharing]
 
 A comprehensive full-stack web application for managing personal finances with intelligent receipt scanning, transaction tracking, and detailed analytics.
 
