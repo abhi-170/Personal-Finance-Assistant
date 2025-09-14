@@ -1,0 +1,145 @@
+/* Responsive Design */
+
+/* Tablet and smaller desktop (1024px and below) */
+@media (max-width: 1024px) {
+    .grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .pagination-container {
+        flex-direction: column;
+        gap: var(--spacing-lg);
+        align-items: stretch;
+    }
+
+    .pagination {
+        justify-content: center;
+    }
+}
+
+/* Mobile and tablet (768px and below) */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+
+    .grid-cols-2 {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-cols-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .btn {
+        padding: var(--spacing-sm) var(--spacing-lg);
+        font-size: var(--font-size-xs);
+    }
+
+    /* Navigation */
+    .navbar-menu {
+        display: none;
+    }
+
+    .navbar-user {
+        gap: var(--spacing-sm);
+    }
+
+    .navbar-content {
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+
+    /* Hero section */
+    .hero h1 {
+        font-size: var(--font-size-3xl);
+    }
+
+    .hero p {
+        font-size: var(--font-size-base);
+    }
+
+    .hero-actions {
+        flex-direction: column;
+    }
+
+    /* Dashboard */
+    .dashboard-header {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--spacing-lg);
+    }
+
+    .dashboard-header h1 {
+        font-size: var(--font-size-2xl);
+    }
+
+    /* Stats grid */
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Feature grid */
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Table responsive */
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .table {
+        min-width: 600px;
+    }
+
+    .table-actions {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
+
+    .action-btn {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* Forms */
+    .form-row {
+        flex-direction: column;
+    }
+
+    /* Modal */
+    .modal {
+        margin: var(--spacing-lg);
+        width: calc(100% - 2rem);
+    }
+
+    /* Pagination */
+    .pagination-info {
+        text-align: center;
+    }
+}
+
+/* Small mobile (480px and below) */
+@media (max-width: 480px) {
+    .grid-cols-4 {
+        grid-template-columns: 1fr;
+    }
+
+    .hero h1 {
+        font-size: var(--font-size-2xl);
+    }
+
+    .features h2 {
+        font-size: var(--font-size-2xl);
+    }
+
+    .modal {
+        margin: var(--spacing-sm);
+        width: calc(100% - 1rem);
+    }
+}

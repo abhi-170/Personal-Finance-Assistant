@@ -1,0 +1,126 @@
+/* Receipt Upload Styling */
+
+.receipt-upload-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-2xl);
+    color: white;
+    margin-bottom: var(--spacing-2xl);
+}
+
+.receipt-upload-section h2 {
+    color: white;
+    margin-bottom: var(--spacing-lg);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+}
+
+.receipt-upload-section p {
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: var(--spacing-xl);
+}
+
+.file-upload-area {
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-2xl);
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    transition: all var(--transition-slow);
+    cursor: pointer;
+    margin-bottom: var(--spacing-lg);
+}
+
+.file-upload-area:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.file-upload-area.has-file {
+    border-color: var(--color-success);
+    background: rgba(16, 185, 129, 0.1);
+}
+
+.file-upload-icon {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-lg);
+    opacity: 0.7;
+}
+
+.file-upload-text {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--spacing-sm);
+}
+
+.file-upload-hint {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: var(--font-size-sm);
+}
+
+.file-input {
+    display: none;
+}
+
+.file-selected-info {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius-md);
+    padding: var(--spacing-lg);
+    margin-top: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.file-selected-info .file-icon {
+    font-size: var(--font-size-xl);
+}
+
+.file-selected-details h4 {
+    color: white;
+    margin: 0;
+    font-size: var(--font-size-base);
+    font-weight: var(--font-weight-medium);
+}
+
+.file-selected-details p {
+    color: rgba(255, 255, 255, 0.8);
+    margin: var(--spacing-xs) 0 0 0;
+    font-size: var(--font-size-sm);
+}
+
+/* Receipt Upload Container - Clean White & Black Theme */
+
+.receipt-upload-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-2xl);
+}
+
+.receipt-upload-card {
+    background: white;
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--border-radius);
+    padding: var(--spacing-3xl) var(--spacing-2xl);
+    text-align: center;
+    box-shadow: var(--shadow);
+}
+
+.receipt-upload-header {
+    color: var(--color-gray-800);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+}
+
+.receipt-upload-description {
+    color: var(--color-gray-600);
+    margin-bottom: var(--spacing-2xl);
+    line-height: var(--line-height-normal);
+}
+
+/* ... continue with other receipt-specific styles ... */
