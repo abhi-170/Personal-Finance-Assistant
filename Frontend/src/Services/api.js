@@ -51,6 +51,7 @@ export const transactionAPI = {
     updateTransaction: (id, transaction) => api.put(`/transactions/${id}`, transaction),
     deleteTransaction: (id) => api.delete(`/transactions/${id}`),
     getTransaction: (id) => api.get(`/transactions/${id}`),
+    migrateSources: () => api.post('/transactions/migrate-sources'),
 };
 
 // Analytics API

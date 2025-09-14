@@ -324,6 +324,7 @@
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 1rem;
+    padding-right: 3.5rem; /* Add space for delete button */
     position: relative;
     transition: all 0.2s ease;
 }
@@ -338,6 +339,7 @@
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 0.5rem;
+    margin-right: 0; /* Ensure no extra margin that could cause overlap */
 }
 
 .receipt-name {
@@ -345,6 +347,8 @@
     font-weight: 600;
     color: #111827;
     margin: 0;
+    flex: 1;
+    margin-right: 1rem; /* Add space between name and amount */
 }
 
 .receipt-confidence {
@@ -354,6 +358,18 @@
     border-radius: 12px;
     font-size: 0.75rem;
     font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.receipt-confidence.income-type {
+    background: #dcfce7;
+    color: #16a34a;
+}
+
+.receipt-confidence.expense-type {
+    background: #fee2e2;
+    color: #dc2626;
 }
 
 .receipt-details {
@@ -375,12 +391,21 @@
 }
 
 .receipt-date,
-.receipt-category {
+.receipt-category,
+.receipt-type {
     color: #6b7280;
 }
 
-.receipt-delete-btn,
-.receipt-view-btn {
+.receipt-type {
+    text-transform: capitalize;
+    font-weight: 500;
+    padding: 0.125rem 0.375rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    background: #f3f4f6;
+}
+
+.receipt-delete-btn {
     position: absolute;
     background: white;
     border: 1px solid #e5e7eb;
@@ -393,14 +418,6 @@
     cursor: pointer;
     transition: all 0.2s ease;
     color: #6b7280;
-}
-
-.receipt-delete-btn {
-    top: 1rem;
-    right: 3rem;
-}
-
-.receipt-view-btn {
     top: 1rem;
     right: 1rem;
 }
@@ -409,12 +426,6 @@
     background: #fef2f2;
     border-color: #fecaca;
     color: #dc2626;
-}
-
-.receipt-view-btn:hover {
-    background: #eff6ff;
-    border-color: #bfdbfe;
-    color: #3b82f6;
 }
 
 /* How to Use Section */
@@ -717,7 +728,7 @@
     }
 
     .receipt-delete-btn {
-        right: 2.5rem;
+        right: 1rem;
     }
 
     .modal-footer {

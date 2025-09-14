@@ -25,14 +25,65 @@ const Receipts = () => {
     // Load receipt history on component mount
     useEffect(() => {
         loadReceiptHistory();
+        // Run migration once to add source field to existing transactions
+        migrateExistingTransactions();
     }, []);
+
+    const migrateExistingTransactions = async () => {
+        try {
+            // Check if migration has already been run
+            const migrationKey = 'transaction_source_migration_done';
+            if (localStorage.getItem(migrationKey)) {
+                return; // Migration already completed
+            }
+
+            await transactionAPI.migrateSources();
+            localStorage.setItem(migrationKey, 'true');
+            console.log('Transaction source migration completed');
+        } catch (error) {
+            console.error('Migration failed:', error);
+            // Don't show error to user as this is background operation
+        }
+    };
 
     const loadReceiptHistory = async () => {
         setIsLoadingHistory(true);
         try {
-            const response = await receiptAPI.getHistory({ limit: 10, page: 1 });
+            // First try to get receipt-only transactions
+            let response = await transactionAPI.getTransactions({ 
+                limit: 3, 
+                page: 1,
+                sortBy: 'date',
+                sortOrder: 'desc',
+                source: 'receipt'
+            });
+            
+            // If no receipt transactions found, get all recent transactions as fallback
+            if (response.data.success && response.data.data.length === 0) {
+                response = await transactionAPI.getTransactions({ 
+                    limit: 3, 
+                    page: 1,
+                    sortBy: 'date',
+                    sortOrder: 'desc'
+                });
+            }
+            
             if (response.data.success) {
-                setRecentReceipts(response.data.data.receipts);
+                // Format the receipt-originated transaction data for display as receipt history
+                const formattedReceipts = response.data.data.map(transaction => ({
+                    id: transaction._id,
+                    name: transaction.description,
+                    amount: `$${Math.abs(transaction.amount).toFixed(2)}`,
+                    date: new Date(transaction.date).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    }),
+                    category: transaction.category,
+                    confidence: 'Transaction', // Since these are saved transactions
+                    type: transaction.type
+                }));
+                setRecentReceipts(formattedReceipts);
             }
         } catch (error) {
             console.error('Error loading receipt history:', error);
@@ -42,21 +93,21 @@ const Receipts = () => {
     };
 
     const handleDeleteReceipt = async (receiptId) => {
-        if (!window.confirm('Are you sure you want to delete this receipt log?')) {
+        if (!window.confirm('Are you sure you want to delete this transaction?')) {
             return;
         }
 
         try {
-            const response = await receiptAPI.deleteLog(receiptId);
+            const response = await transactionAPI.deleteTransaction(receiptId);
             if (response.data.success) {
-                // Remove the deleted receipt from the list
+                // Remove the deleted transaction from the list
                 setRecentReceipts(prev => prev.filter(receipt => receipt.id !== receiptId));
-                setSuccess('Receipt log deleted successfully');
+                setSuccess('Transaction deleted successfully');
                 setTimeout(() => setSuccess(''), 3000);
             }
         } catch (error) {
-            console.error('Error deleting receipt:', error);
-            setError('Failed to delete receipt log');
+            console.error('Error deleting transaction:', error);
+            setError('Failed to delete transaction');
             setTimeout(() => setError(''), 3000);
         }
     };
@@ -393,15 +444,15 @@ const Receipts = () => {
                     <div className="history-section">
                         <div className="history-card">
                             <div className="history-header">
-                                <h2 className="history-title">Receipt History</h2>
-                                <span className="receipt-count">{recentReceipts.length} receipts processed</span>
+                                <h2 className="history-title">Recent Transactions</h2>
+                                <span className="receipt-count">{recentReceipts.length} recent transactions</span>
                             </div>
 
                             <div className="receipt-list">
                                 {isLoadingHistory ? (
                                     <div className="loading-state">
                                         <div className="spinner"></div>
-                                        <span>Loading receipt history...</span>
+                                        <span>Loading recent transactions...</span>
                                     </div>
                                 ) : recentReceipts.length === 0 ? (
                                     <div className="empty-state">
@@ -409,36 +460,33 @@ const Receipts = () => {
                                             <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                             <path d="M14 2V8H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                         </svg>
-                                        <h3 style={{ color: '#6b7280', margin: '0 0 0.5rem 0', fontSize: '1rem' }}>No receipts processed yet</h3>
-                                        <p style={{ color: '#9ca3af', margin: 0, fontSize: '0.875rem' }}>Upload your first receipt to get started!</p>
+                                        <h3 style={{ color: '#6b7280', margin: '0 0 0.5rem 0', fontSize: '1rem' }}>No transactions yet</h3>
+                                        <p style={{ color: '#9ca3af', margin: 0, fontSize: '0.875rem' }}>Upload your first receipt or add a transaction to get started!</p>
                                     </div>
                                 ) : (
                                     recentReceipts.map((receipt) => (
                                         <div key={receipt.id} className="receipt-item">
                                             <div className="receipt-main-info">
                                                 <h3 className="receipt-name">{receipt.name}</h3>
-                                                <div className="receipt-confidence">{receipt.confidence}</div>
+                                                <div className={`receipt-confidence ${receipt.type === 'income' ? 'income-type' : 'expense-type'}`}>
+                                                    {receipt.type === 'income' ? '+ ' : '- '}{receipt.amount}
+                                                </div>
                                             </div>
                                             <div className="receipt-details">
-                                                <span className="receipt-amount">{receipt.amount}</span>
-                                                <span className="receipt-separator">•</span>
                                                 <span className="receipt-date">{receipt.date}</span>
                                                 <span className="receipt-separator">•</span>
                                                 <span className="receipt-category">{receipt.category}</span>
+                                                <span className="receipt-separator">•</span>
+                                                <span className="receipt-type">{receipt.type}</span>
                                             </div>
                                             <button
                                                 className="receipt-delete-btn"
                                                 onClick={() => handleDeleteReceipt(receipt.id)}
-                                                title="Delete receipt log"
+                                                title="Delete transaction"
                                             >
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M3 6H5H21" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                                     <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                                </svg>
-                                            </button>
-                                            <button className="receipt-view-btn" title="View details">
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                                 </svg>
                                             </button>
                                         </div>
