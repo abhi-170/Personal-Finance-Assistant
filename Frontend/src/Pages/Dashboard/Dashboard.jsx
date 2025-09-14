@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Layout from '../components/Layout';
-import TransactionModal from '../components/TransactionModal';
-import { transactionAPI, analyticsAPI } from '../services/api';
-import { testBackendConnection, testAPIConnection } from '../utils/connectionTest';
+import Layout from '../../Components/Layout.jsx';
+import TransactionModal from '../../Components/TransactionModal.jsx';
+import { transactionAPI, analyticsAPI } from '../../Services/api.js';
+import { testBackendConnection, testAPIConnection } from '../../Utils/connectionTest.js';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
@@ -46,7 +46,7 @@ const Dashboard = () => {
 
             // Test network connection first
             console.log('Attempting to fetch dashboard data...');
-            console.log('API Base URL:', process.env.REACT_APP_API_URL || 'http://localhost:8080/api');
+            console.log('API Base URL:', import.meta.env.REACT_APP_API_URL || 'http://localhost:8080/api');
 
             // Test backend connection first
             const backendConnected = await testBackendConnection();

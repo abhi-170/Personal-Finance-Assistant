@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import Layout from '../components/Layout';
-import TransactionModal from '../components/TransactionModal';
-import { transactionAPI } from '../services/api';
+import Layout from '../../Components/Layout.jsx';
+import TransactionModal from '../../Components/TransactionModal.jsx';
+import { transactionAPI } from '../../Services/api.js';
 
 const Transactions = () => {
     const [transactions, setTransactions] = useState([]);

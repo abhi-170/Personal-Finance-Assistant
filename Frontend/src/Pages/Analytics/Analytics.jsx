@@ -12,8 +12,8 @@ import {
     Legend,
 } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
-import Layout from '../components/Layout';
-import { analyticsAPI, transactionAPI } from '../services/api';
+import Layout from '../../Components/Layout.jsx';
+import { analyticsAPI, transactionAPI } from '../../Services/api.js';
 
 ChartJS.register(
     CategoryScale,
