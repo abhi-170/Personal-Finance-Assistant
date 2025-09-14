@@ -1,9 +1,15 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 import connectDB from './Configs/dbConfig.js';
 import errorHandler from './Middlewares/errorHandler.js'
 
+// Get current directory for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Import routes
 import authRoutes from './Routes/authRoutes.js';
@@ -15,6 +21,13 @@ dotenv.config();
 const app= express();
 
 const PORT=process.env.PORT || 8181;
+
+// Create uploads directory if it doesn't exist
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+    console.log('Created uploads directory:', uploadsDir);
+}
 
 // Middlewares
 app.use(cors());

@@ -42,11 +42,25 @@ export const validateTransaction = (req, res, next) => {
             errors.push('Date must be a valid date');
         } else {
             const now = new Date();
-            const oneYearFromNow = new Date();
-            oneYearFromNow.setFullYear(now.getFullYear() + 1);
-
-            if (transactionDate > oneYearFromNow) {
-                errors.push('Date cannot be more than one year in the future');
+            const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+            
+            // Check if date is in the future
+            if (transactionDate > todayEnd) {
+                errors.push('Transaction date cannot be in the future');
+            }
+            
+            // Check if date is too far in the past (more than 10 years)
+            const tenYearsAgo = new Date();
+            tenYearsAgo.setFullYear(tenYearsAgo.getFullYear() - 10);
+            
+            if (transactionDate < tenYearsAgo) {
+                errors.push('Transaction date cannot be more than 10 years in the past');
+            }
+            
+            // Validate year format - prevent 5+ digit years
+            const yearStr = transactionDate.getFullYear().toString();
+            if (yearStr.length > 4) {
+                errors.push('Invalid year format - year must be 4 digits');
             }
         }
     }
@@ -106,11 +120,25 @@ export const validateTransactionUpdate = (req, res, next) => {
             errors.push('Date must be a valid date');
         } else {
             const now = new Date();
-            const oneYearFromNow = new Date();
-            oneYearFromNow.setFullYear(now.getFullYear() + 1);
-
-            if (transactionDate > oneYearFromNow) {
-                errors.push('Date cannot be more than one year in the future');
+            const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+            
+            // Check if date is in the future
+            if (transactionDate > todayEnd) {
+                errors.push('Transaction date cannot be in the future');
+            }
+            
+            // Check if date is too far in the past (more than 10 years)
+            const tenYearsAgo = new Date();
+            tenYearsAgo.setFullYear(tenYearsAgo.getFullYear() - 10);
+            
+            if (transactionDate < tenYearsAgo) {
+                errors.push('Transaction date cannot be more than 10 years in the past');
+            }
+            
+            // Validate year format - prevent 5+ digit years
+            const yearStr = transactionDate.getFullYear().toString();
+            if (yearStr.length > 4) {
+                errors.push('Invalid year format - year must be 4 digits');
             }
         }
     }
@@ -163,6 +191,27 @@ export const validateBulkTransactions = (req, res, next) => {
 
             if (!date || isNaN(new Date(date).getTime())) {
                 errors.push(`Transaction ${index + 1}: Invalid or missing date`);
+            } else {
+                // Additional date validation for bulk transactions
+                const transactionDate = new Date(date);
+                const now = new Date();
+                const todayEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+                
+                if (transactionDate > todayEnd) {
+                    errors.push(`Transaction ${index + 1}: Date cannot be in the future`);
+                }
+                
+                const tenYearsAgo = new Date();
+                tenYearsAgo.setFullYear(tenYearsAgo.getFullYear() - 10);
+                
+                if (transactionDate < tenYearsAgo) {
+                    errors.push(`Transaction ${index + 1}: Date cannot be more than 10 years in the past`);
+                }
+                
+                const yearStr = transactionDate.getFullYear().toString();
+                if (yearStr.length > 4) {
+                    errors.push(`Transaction ${index + 1}: Invalid year format`);
+                }
             }
         });
     }
@@ -216,11 +265,41 @@ export const validateTransactionQuery = (req, res, next) => {
         errors.push('End date must be a valid date');
     }
 
+    // Additional date format validation
+    if (startDate) {
+        const startDateObj = new Date(startDate);
+        const yearStr = startDateObj.getFullYear().toString();
+        if (yearStr.length > 4 || yearStr.length < 4) {
+            errors.push('Start date year must be exactly 4 digits');
+        }
+        if (startDateObj.getFullYear() < 1900 || startDateObj.getFullYear() > 2100) {
+            errors.push('Start date year must be between 1900 and 2100');
+        }
+    }
+
+    if (endDate) {
+        const endDateObj = new Date(endDate);
+        const yearStr = endDateObj.getFullYear().toString();
+        if (yearStr.length > 4 || yearStr.length < 4) {
+            errors.push('End date year must be exactly 4 digits');
+        }
+        if (endDateObj.getFullYear() < 1900 || endDateObj.getFullYear() > 2100) {
+            errors.push('End date year must be between 1900 and 2100');
+        }
+    }
+
     if (startDate && endDate) {
         const start = new Date(startDate);
         const end = new Date(endDate);
         if (start > end) {
             errors.push('Start date cannot be after end date');
+        }
+        
+        // Check for reasonable date range (not more than 10 years apart)
+        const timeDiff = end.getTime() - start.getTime();
+        const daysDiff = timeDiff / (1000 * 3600 * 24);
+        if (daysDiff > 3650) { // 10 years
+            errors.push('Date range cannot exceed 10 years');
         }
     }
 
