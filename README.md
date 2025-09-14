@@ -7,7 +7,7 @@
 
 A comprehensive full-stack web application for managing personal finances with intelligent receipt scanning, transaction tracking, and detailed analytics.
 
-## �🌟 Key Features
+## 🌟 Key Features
 
 ### 📊 Financial Management
 - **Transaction Tracking**: Add, edit, and delete income/expense transactions
