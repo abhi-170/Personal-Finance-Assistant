@@ -26,7 +26,7 @@ app.get('/', (req, res) => {
     res.send(`Personal Finance Assistant Backend is live!`);
 });
 
-app.use('api/auth',authRoutes);
+app.use('/api/auth',authRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/receipts', receiptRoutes);
