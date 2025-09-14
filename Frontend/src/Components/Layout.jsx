@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../Context/AuthContext.js';
+import { useAuth } from '../Context/AuthContext.jsx';
 
 const Layout = ({ children }) => {
     const { user, logout } = useAuth();

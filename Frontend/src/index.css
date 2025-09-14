@@ -1,0 +1,44 @@
+/* 
+ * Personal Finance Assistant - Modular CSS Architecture
+ * 
+ * This file imports all CSS modules in the correct order:
+ * 1. Variables (CSS custom properties)
+ * 2. Base styles (reset, foundational elements)
+ * 3. Layout styles (grid system, flexbox utilities)
+ * 4. Component styles (buttons, forms, cards, etc.)
+ * 5. Page-specific styles
+ * 6. Utility classes
+ * 7. Responsive design
+ */
+
+/* 1. Variables & Base */
+@import './styles/_variables.css';
+@import './styles/_base.css';
+
+/* 2. Layout */
+@import './styles/layout/_layout.css';
+@import './styles/layout/_navbar.css';
+
+/* 3. Components */
+@import './styles/components/_buttons.css';
+@import './styles/components/_forms.css';
+@import './styles/components/_cards-tables.css';
+@import './styles/components/_modals-alerts.css';
+@import './styles/components/_pagination.css';
+
+/* 4. Pages */
+@import './styles/pages/_dashboard.css';
+@import './styles/pages/_landing.css';
+@import './styles/pages/_receipts.css';
+
+/* 5. Utilities */
+@import './styles/_utilities.css';
+
+/* 6. Responsive */
+@import './styles/_responsive.css';
+
+/* 
+ * Note: The Receipts.css file in the pages directory contains 
+ * specific styles for the receipts page component.
+ * This modular approach makes the CSS more maintainable and organized.
+ */
