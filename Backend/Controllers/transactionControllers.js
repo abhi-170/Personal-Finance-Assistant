@@ -7,6 +7,38 @@ import {
     getUserCategories
 } from '../Repository/transactionRepository.js';
 
+// Helper function to convert period to date range
+const getPeriodDateRange = (period) => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    switch (period) {
+        case 'current_month':
+            return {
+                startDate: new Date(currentYear, currentMonth, 1),
+                endDate: new Date(currentYear, currentMonth + 1, 0, 23, 59, 59)
+            };
+        case 'last_month':
+            return {
+                startDate: new Date(currentYear, currentMonth - 1, 1),
+                endDate: new Date(currentYear, currentMonth, 0, 23, 59, 59)
+            };
+        case 'current_year':
+            return {
+                startDate: new Date(currentYear, 0, 1),
+                endDate: new Date(currentYear, 11, 31, 23, 59, 59)
+            };
+        case 'last_year':
+            return {
+                startDate: new Date(currentYear - 1, 0, 1),
+                endDate: new Date(currentYear - 1, 11, 31, 23, 59, 59)
+            };
+        default:
+            return { startDate: null, endDate: null };
+    }
+};
+
 // Create new transaction
 export const createTransaction = async (req, res, next) => {
     try {
@@ -43,18 +75,28 @@ export const getTransactions = async (req, res, next) => {
             category,
             startDate,
             endDate,
+            description,
+            period,
             page = 1,
             limit = 10,
             sortBy = 'date',
             sortOrder = 'desc'
         } = req.query;
 
-        const filters = {
+        let filters = {
             type,
             category,
             startDate,
-            endDate
+            endDate,
+            description
         };
+
+        // If period is provided, override startDate and endDate
+        if (period) {
+            const periodDates = getPeriodDateRange(period);
+            filters.startDate = periodDates.startDate;
+            filters.endDate = periodDates.endDate;
+        }
 
         // Construct sort string based on sortBy and sortOrder
         const sortString = sortOrder === 'desc' ? `-${sortBy}` : sortBy;

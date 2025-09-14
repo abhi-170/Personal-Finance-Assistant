@@ -1,11 +1,26 @@
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs/promises';
+import fsSync from 'fs';
+import { fileURLToPath } from 'url';
 import Tesseract from 'tesseract.js';
 // Dynamic import for pdf-parse to avoid initialization issues
 // import PDFParse from 'pdf-parse';
 import sharp from 'sharp';
 import { saveTransactionToDB } from '../Repository/transactionRepository.js';
+
+// Get current directory for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Create uploads directory path
+const uploadsDir = path.join(__dirname, '..', 'uploads');
+
+// Ensure uploads directory exists synchronously
+if (!fsSync.existsSync(uploadsDir)) {
+    fsSync.mkdirSync(uploadsDir, { recursive: true });
+    console.log('Created uploads directory:', uploadsDir);
+}
 
 class OCRService {
     constructor() {
@@ -31,6 +46,11 @@ class OCRService {
     async extractTextFromImage(filePath) {
         try {
             console.log('Starting OCR processing for:', filePath);
+            
+            // Check if file exists
+            if (!fsSync.existsSync(filePath)) {
+                throw new Error(`File not found: ${filePath}`);
+            }
 
             // Preprocess image for better OCR accuracy
             const processedImagePath = await this.preprocessImage(filePath);
@@ -45,7 +65,9 @@ class OCRService {
 
             // Clean up processed image if it's different from original
             if (processedImagePath !== filePath) {
-                await fs.unlink(processedImagePath).catch(() => { });
+                await fs.unlink(processedImagePath).catch(err => {
+                    console.warn('Could not delete processed image:', err.message);
+                });
             }
 
             console.log('OCR completed. Text length:', text.length);
@@ -58,6 +80,11 @@ class OCRService {
 
     async extractTextFromPDF(filePath) {
         try {
+            // Check if file exists
+            if (!fsSync.existsSync(filePath)) {
+                throw new Error(`PDF file not found: ${filePath}`);
+            }
+
             // Dynamic import to avoid initialization issues
             const { default: PDFParse } = await import('pdf-parse');
             const pdfBuffer = await fs.readFile(filePath);
@@ -588,7 +615,7 @@ const ocrService = new OCRService();
 // Configure multer for file uploads
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads/');
+        cb(null, uploadsDir);
     },
     filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -634,8 +661,15 @@ export const previewReceipt = async (req, res, next) => {
         const filePath = req.file.path;
         const fileType = req.file.mimetype.startsWith('image/') ? 'image' : 'pdf';
 
+        // Check if file exists
+        if (!fsSync.existsSync(filePath)) {
+            throw new Error(`Uploaded file not found: ${filePath}`);
+        }
+
         try {
             console.log(`Processing ${fileType} file: ${req.file.originalname}`);
+            console.log('File path exists:', fsSync.existsSync(filePath));
+            console.log('Full file path:', path.resolve(filePath));
 
             // Use the new OCR service
             const result = await ocrService.processDocument(filePath, fileType);

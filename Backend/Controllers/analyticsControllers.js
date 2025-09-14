@@ -1,16 +1,55 @@
 import { getTransactionStats } from '../Repository/transactionRepository.js';
 
+// Helper function to convert period to date range
+const getPeriodDateRange = (period) => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+
+    switch (period) {
+        case 'current_month':
+            return {
+                startDate: new Date(currentYear, currentMonth, 1),
+                endDate: new Date(currentYear, currentMonth + 1, 0, 23, 59, 59)
+            };
+        case 'last_month':
+            return {
+                startDate: new Date(currentYear, currentMonth - 1, 1),
+                endDate: new Date(currentYear, currentMonth, 0, 23, 59, 59)
+            };
+        case 'current_year':
+            return {
+                startDate: new Date(currentYear, 0, 1),
+                endDate: new Date(currentYear, 11, 31, 23, 59, 59)
+            };
+        case 'last_year':
+            return {
+                startDate: new Date(currentYear - 1, 0, 1),
+                endDate: new Date(currentYear - 1, 11, 31, 23, 59, 59)
+            };
+        default:
+            return { startDate: null, endDate: null };
+    }
+};
+
 // Get comprehensive transaction analytics
 export const getAnalytics = async (req, res, next) => {
     try {
         const userId = req.user._id;
-        const { startDate, endDate, type } = req.query;
+        const { startDate, endDate, type, period } = req.query;
 
-        const filters = {
+        let filters = {
             startDate,
             endDate,
             type
         };
+
+        // If period is provided, override startDate and endDate
+        if (period) {
+            const periodDates = getPeriodDateRange(period);
+            filters.startDate = periodDates.startDate;
+            filters.endDate = periodDates.endDate;
+        }
 
         const stats = await getTransactionStats(userId, filters);
 
@@ -93,13 +132,20 @@ export const getAnalytics = async (req, res, next) => {
 export const getExpensesByCategory = async (req, res, next) => {
     try {
         const userId = req.user._id;
-        const { startDate, endDate } = req.query;
+        const { startDate, endDate, period } = req.query;
 
-        const filters = {
+        let filters = {
             startDate,
             endDate,
             type: 'expense'
         };
+
+        // If period is provided, override startDate and endDate
+        if (period) {
+            const periodDates = getPeriodDateRange(period);
+            filters.startDate = periodDates.startDate;
+            filters.endDate = periodDates.endDate;
+        }
 
         const stats = await getTransactionStats(userId, filters);
 
@@ -136,13 +182,20 @@ export const getExpensesByCategory = async (req, res, next) => {
 export const getIncomeByCategory = async (req, res, next) => {
     try {
         const userId = req.user._id;
-        const { startDate, endDate } = req.query;
+        const { startDate, endDate, period } = req.query;
 
-        const filters = {
+        let filters = {
             startDate,
             endDate,
             type: 'income'
         };
+
+        // If period is provided, override startDate and endDate
+        if (period) {
+            const periodDates = getPeriodDateRange(period);
+            filters.startDate = periodDates.startDate;
+            filters.endDate = periodDates.endDate;
+        }
 
         const stats = await getTransactionStats(userId, filters);
 
@@ -179,13 +232,20 @@ export const getIncomeByCategory = async (req, res, next) => {
 export const getMonthlyTrends = async (req, res, next) => {
     try {
         const userId = req.user._id;
-        const { startDate, endDate, type } = req.query;
+        const { startDate, endDate, type, period } = req.query;
 
-        const filters = {
+        let filters = {
             startDate,
             endDate,
             type
         };
+
+        // If period is provided, override startDate and endDate
+        if (period) {
+            const periodDates = getPeriodDateRange(period);
+            filters.startDate = periodDates.startDate;
+            filters.endDate = periodDates.endDate;
+        }
 
         const stats = await getTransactionStats(userId, filters);
 
@@ -237,12 +297,19 @@ export const getMonthlyTrends = async (req, res, next) => {
 export const getSummaryStats = async (req, res, next) => {
     try {
         const userId = req.user._id;
-        const { startDate, endDate } = req.query;
+        const { startDate, endDate, period } = req.query;
 
-        const filters = {
+        let filters = {
             startDate,
             endDate
         };
+
+        // If period is provided, override startDate and endDate
+        if (period) {
+            const periodDates = getPeriodDateRange(period);
+            filters.startDate = periodDates.startDate;
+            filters.endDate = periodDates.endDate;
+        }
 
         const stats = await getTransactionStats(userId, filters);
 
