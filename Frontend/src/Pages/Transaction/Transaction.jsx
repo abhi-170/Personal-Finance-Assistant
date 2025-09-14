@@ -52,7 +52,11 @@ const Transactions = () => {
             const params = {
                 page: pagination.page,
                 limit: pagination.limit,
-                ...filters,
+                type: filters.type,
+                category: filters.category,
+                startDate: filters.startDate,
+                endDate: filters.endDate,
+                description: filters.search, // Map search to description for backend
                 sortBy: 'date',
                 sortOrder: 'desc',
             };
@@ -97,6 +101,68 @@ const Transactions = () => {
     }, [pagination.page, pagination.limit, filters]);
 
     const handleFilterChange = (field, value) => {
+        // Date validation for filter inputs
+        if ((field === 'startDate' || field === 'endDate') && value) {
+            const selectedDate = new Date(value);
+            const today = new Date();
+            
+            // Check if date is valid
+            if (isNaN(selectedDate.getTime())) {
+                console.warn('Invalid date format');
+                return;
+            }
+            
+            // Check if year is reasonable (4 digits, between 1900-2100)
+            const year = selectedDate.getFullYear();
+            if (year < 1900 || year > 2100) {
+                console.warn('Year must be between 1900 and 2100');
+                return;
+            }
+            
+            // Don't allow future dates more than today
+            if (selectedDate > today) {
+                console.warn('Filter date cannot be in the future');
+                return;
+            }
+        }
+        
+        // Additional validation for date range
+        if (field === 'endDate' && value && filters.startDate) {
+            const startDate = new Date(filters.startDate);
+            const endDate = new Date(value);
+            
+            if (endDate < startDate) {
+                console.warn('End date cannot be before start date');
+                return;
+            }
+            
+            // Check for reasonable date range (not more than 10 years)
+            const timeDiff = endDate.getTime() - startDate.getTime();
+            const daysDiff = timeDiff / (1000 * 3600 * 24);
+            if (daysDiff > 3650) {
+                console.warn('Date range cannot exceed 10 years');
+                return;
+            }
+        }
+        
+        if (field === 'startDate' && value && filters.endDate) {
+            const startDate = new Date(value);
+            const endDate = new Date(filters.endDate);
+            
+            if (startDate > endDate) {
+                console.warn('Start date cannot be after end date');
+                return;
+            }
+            
+            // Check for reasonable date range
+            const timeDiff = endDate.getTime() - startDate.getTime();
+            const daysDiff = timeDiff / (1000 * 3600 * 24);
+            if (daysDiff > 3650) {
+                console.warn('Date range cannot exceed 10 years');
+                return;
+            }
+        }
+        
         setFilters(prev => ({ ...prev, [field]: value }));
         setPagination(prev => ({ ...prev, page: 1 }));
     };
@@ -253,6 +319,8 @@ const Transactions = () => {
                             className="form-input"
                             value={filters.startDate}
                             onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                            max={new Date().toISOString().split('T')[0]} // Prevent future dates
+                            min="1900-01-01" // Reasonable minimum
                         />
                     </div>
 
@@ -263,6 +331,8 @@ const Transactions = () => {
                             className="form-input"
                             value={filters.endDate}
                             onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                            max={new Date().toISOString().split('T')[0]} // Prevent future dates
+                            min="1900-01-01" // Reasonable minimum
                         />
                     </div>
                 </div>

@@ -34,6 +34,23 @@ const TransactionModal = ({ transaction, onClose, categoryOptions }) => {
                 [name]: value,
                 category: '' // Reset category when type changes
             });
+        } else if (name === 'date') {
+            // Validate date - cannot be in the future
+            const selectedDate = new Date(value);
+            const today = new Date();
+            today.setHours(23, 59, 59, 999); // Set to end of today
+            
+            if (selectedDate > today) {
+                setError('Transaction date cannot be in the future');
+                return;
+            } else {
+                setError(''); // Clear error if date is valid
+            }
+            
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
         } else {
             setFormData({
                 ...formData,
@@ -63,6 +80,25 @@ const TransactionModal = ({ transaction, onClose, categoryOptions }) => {
 
         if (!formData.category) {
             setError('Please select a category');
+            return;
+        }
+
+        // Additional date validation before submission
+        const selectedDate = new Date(formData.date);
+        const today = new Date();
+        today.setHours(23, 59, 59, 999);
+        
+        if (selectedDate > today) {
+            setError('Transaction date cannot be in the future');
+            return;
+        }
+
+        // Check if date is too far in the past (more than 10 years)
+        const tenYearsAgo = new Date();
+        tenYearsAgo.setFullYear(tenYearsAgo.getFullYear() - 10);
+        
+        if (selectedDate < tenYearsAgo) {
+            setError('Transaction date cannot be more than 10 years in the past');
             return;
         }
 
@@ -207,6 +243,8 @@ const TransactionModal = ({ transaction, onClose, categoryOptions }) => {
                                     className="form-input"
                                     value={formData.date}
                                     onChange={handleChange}
+                                    max={new Date().toISOString().split('T')[0]} // Prevent future dates
+                                    min="2010-01-01" // Reasonable minimum date
                                     required
                                 />
                             </div>

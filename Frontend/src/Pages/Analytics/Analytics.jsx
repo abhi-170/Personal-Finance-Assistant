@@ -43,8 +43,8 @@ const Analytics = () => {
         try {
             setIsLoading(true);
 
-            // Get comprehensive analytics data
-            const analyticsResponse = await analyticsAPI.getAnalytics();
+            // Get comprehensive analytics data with period filter
+            const analyticsResponse = await analyticsAPI.getAnalytics({ period });
 
             if (analyticsResponse.data.success) {
                 const data = analyticsResponse.data.data;
@@ -70,13 +70,15 @@ const Analytics = () => {
                     type: 'expense',
                     limit: 2,
                     sortBy: 'amount',
-                    sortOrder: 'desc'
+                    sortOrder: 'desc',
+                    period: period
                 }),
                 transactionAPI.getTransactions({
                     type: 'income',
                     limit: 2,
                     sortBy: 'amount',
-                    sortOrder: 'desc'
+                    sortOrder: 'desc',
+                    period: period
                 })
             ]);
 
